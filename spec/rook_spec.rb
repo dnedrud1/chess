@@ -43,4 +43,5 @@ describe Rook do
       expect(rook.position).to eql [1,5]
     end
   end
+  
 end

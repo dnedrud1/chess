@@ -205,10 +205,50 @@ class Rook
 end
 
 class Queen
-  attr_accessor :position
+  attr_accessor(:position,:color)
 
-  def initialize(position)
+  def initialize(position,color)
     @position = position
+    @color = color
+  end
+  
+  def available_moves(pieces)  
+    all_lines_and_diagonals = []
+    [[1,1],[-1,-1],[-1,1],[1,-1],[0,1],[0,-1],[-1,0],[1,0]].each do |direction|
+      all_lines_and_diagonals += lines_or_diagonals(direction,pieces)
+    end
+    all_lines_and_diagonals
+  end
+  
+  def lines_or_diagonals(arr,pieces)
+    board = Chess_board.new.squares
+    piece_positions = pieces.map { |piece| piece.position }
+    row = @position[0]
+    column = @position[1]
+   
+    all_checked = []
+    condition = false
+    until condition == true
+      current = [row + arr[0], column + arr[1]]
+      if board.include?(current)
+		    if !piece_positions.include?(current)
+		      all_checked.push(current)
+		    else
+		      occupying_piece = pieces.find { |piece| piece.position == current }
+		      all_checked.push(current) if occupying_piece.color != @color
+		      condition = true
+		    end
+	    else
+	      condition = true
+	    end
+      row += arr[0]
+      column += arr[1]
+    end
+    all_checked
+  end
+  
+  def move(new,pieces)
+    @position = new if available_moves(pieces).include?(new)
   end
 end
 
