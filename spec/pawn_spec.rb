@@ -3,6 +3,7 @@ require_relative '../lib/board_and_pieces'
 describe Pawn do
 
   let(:pawn) { Pawn.new([2,2],"white") }
+  let(:black_pawn) { Pawn.new([7,2],"black") }
   let(:empty_board) { [pawn] }
   let(:board_with_pawns) { [pawn,Pawn.new([3,1],"white"),Pawn.new([3,2],"black"),Pawn.new([3,3],"black")] }
  
@@ -22,6 +23,10 @@ describe Pawn do
     it 'moves to an empty space' do
       pawn.move([4,2],empty_board)
       expect(pawn.position).to eql [4,2]
+    end
+    it 'moves opposite direction when black' do
+      black_pawn.move([5,2],empty_board)
+      expect(black_pawn.position).to eql [5,2]
     end
     it 'can not move two forward after already moving' do
       pawn.move([3,2],empty_board)
