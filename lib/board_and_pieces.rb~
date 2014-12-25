@@ -13,6 +13,7 @@ class Pawn
   def initialize(position,color)
     @position = position
     @color = color
+    @moves = 0
   end
     
   def available_moves(pieces)
@@ -22,10 +23,24 @@ class Pawn
     column = @position[1]
     
     all_checked = []
+    [[row + 1,column - 1],[row + 1,column + 1]].each do |square| 
+      if piece_positions.include?(square)
+        occupying_piece = pieces.find { |piece| piece.position == square }
+        all_checked.push(square) if occupying_piece.color != @color
+      end
+    end
+    if !piece_positions.include?([row + 1, column])
+      all_checked.push([row + 1, column])
+      all_checked.push([row + 2, column]) if !piece_positions.include?([row + 2, column]) && @moves == 0
+    end
+    all_checked
   end  
   
   def move(new,pieces)
-    @position = new if available_moves(pieces).include?(new)
+    if available_moves(pieces).include?(new)
+		  @position = new
+		  @moves += 1
+	  end
   end
 end
 
