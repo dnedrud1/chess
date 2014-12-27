@@ -8,7 +8,7 @@ class Chess_board
 end
 
 class Pawn
-  attr_accessor(:position,:color)
+  attr_accessor(:position,:color,:moves)
 
   def initialize(position,color)
     @position = position
@@ -153,7 +153,7 @@ class Bishop
 end
 
 class Rook
-  attr_accessor(:position,:color)
+  attr_accessor(:position,:color,:moves)
 
   def initialize(position,color)
     @position = position
@@ -253,10 +253,45 @@ class Queen
 end
 
 class King
-  attr_accessor :position
+  attr_accessor(:position,:color,:moves)
 
-  def initialize(position)
+  def initialize(position,color)
     @position = position
+    @color = color
+    @moves = 0
+  end
+  
+  def available_moves(pieces)  
+    board = Chess_board.new.squares
+    piece_positions = pieces.map { |piece| piece.position }
+    row = @position[0]
+    column = @position[1]
+    enemy_pieces = pieces.select { |piece| piece.color != @color }
+    
+    all_unchecked = [[row + 1,column + 1],[row - 1,column - 1],[row - 1,column + 1],[row + 1,column - 1],[row,column + 1],[row,column - 1],[row - 1,column],[row + 1,column]]
+    all_checked = []
+    all_unchecked.each do |square|
+      if board.include?(square)
+        if !piece_positions.include?(square)
+          all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(pieces).include?(square) }
+        else
+          occupying_piece = pieces.find { |piece| piece.position == square }
+          current_piece = pieces.find { |piece| piece.position == @position }
+          hypothetical_pieces = pieces - [occupying_piece] - [current_piece] + [Pawn.new(square,@color)]
+          if occupying_piece.color != @color
+            all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(hypothetical_pieces).include?(square) }
+          end
+        end
+      end
+    end
+    all_checked
+  end
+  
+  def move(new,pieces)
+    if available_moves(pieces).include?(new)
+		  @position = new
+		  @moves += 1
+	  end
   end
 end
 
