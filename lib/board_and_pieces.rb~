@@ -14,6 +14,7 @@ class Pawn
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♙" : "♟"
   end
     
   def available_moves(pieces)  
@@ -74,6 +75,7 @@ class Knight
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♘" : "♞"
   end
   
   def available_moves(pieces)
@@ -110,6 +112,7 @@ class Bishop
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♗" : "♝"
   end
   
   def available_moves(pieces)  
@@ -159,6 +162,7 @@ class Rook
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♖" : "♜"
   end
   
   def available_moves(pieces)  
@@ -210,6 +214,7 @@ class Queen
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♕" : "♛"
   end
   
   def available_moves(pieces)  
@@ -259,6 +264,7 @@ class King
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♔" : "♚"
   end
   
   def available_moves(pieces)  

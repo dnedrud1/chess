@@ -41,3 +41,6 @@ class Chess
   end
   
 end
+
+chess = Chess.new
+puts chess.display_board

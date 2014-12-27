@@ -8,12 +8,13 @@ class Chess_board
 end
 
 class Pawn
-  attr_accessor(:position,:color,:moves)
+  attr_accessor(:position,:color,:moves,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♙" : "♟"
   end
     
   def available_moves(pieces)  
@@ -69,11 +70,12 @@ class Pawn
 end
 
 class Knight
-  attr_accessor(:position,:color)
+  attr_accessor(:position,:color,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♘" : "♞"
   end
   
   def available_moves(pieces)
@@ -105,11 +107,12 @@ class Knight
 end
 
 class Bishop
-  attr_accessor(:position,:color)
+  attr_accessor(:position,:color,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♗" : "♝"
   end
   
   def available_moves(pieces)  
@@ -153,12 +156,13 @@ class Bishop
 end
 
 class Rook
-  attr_accessor(:position,:color,:moves)
+  attr_accessor(:position,:color,:moves,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♖" : "♜"
   end
   
   def available_moves(pieces)  
@@ -205,11 +209,12 @@ class Rook
 end
 
 class Queen
-  attr_accessor(:position,:color)
+  attr_accessor(:position,:color,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
+    @symbol = @color == "white" ? "♕" : "♛"
   end
   
   def available_moves(pieces)  
@@ -253,12 +258,13 @@ class Queen
 end
 
 class King
-  attr_accessor(:position,:color,:moves)
+  attr_accessor(:position,:color,:moves,:symbol)
 
   def initialize(position,color)
     @position = position
     @color = color
     @moves = 0
+    @symbol = @color == "white" ? "♔" : "♚"
   end
   
   def available_moves(pieces)  
