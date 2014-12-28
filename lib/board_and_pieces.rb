@@ -1,3 +1,7 @@
+# These classes are for use in the program "Chess"
+# by Daniel Nedrud
+# 12/28/2014
+
 class Chess_board
   attr_accessor :squares
 
@@ -21,6 +25,8 @@ class Pawn
     @color == "white" ? white_moves(pieces) : black_moves(pieces)
   end  
   
+  # Pawn is only piece that moves in different direction depending on color
+  # which is why two methods are necessary.
   def white_moves(pieces)
     board = Chess_board.new.squares
     piece_positions = pieces.map { |piece| piece.position }
@@ -54,9 +60,9 @@ class Pawn
         all_checked.push(square) if occupying_piece.color != @color
       end
     end
-    if !piece_positions.include?([row + 1, column])
+    if !piece_positions.include?([row - 1, column])
       all_checked.push([row - 1, column])
-      all_checked.push([row - 2, column]) if !piece_positions.include?([row + 2, column]) && @moves == 0
+      all_checked.push([row - 2, column]) if !piece_positions.include?([row - 2, column]) && @moves == 0
     end
     all_checked
   end
@@ -279,12 +285,17 @@ class King
     all_unchecked.each do |square|
       if board.include?(square)
         if !piece_positions.include?(square)
+          # checks that the targeted empty space is not an "available move" for an enemy piece
           all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(pieces).include?(square) }
         else
           occupying_piece = pieces.find { |piece| piece.position == square }
           current_piece = pieces.find { |piece| piece.position == @position }
+          # These hypothetical pieces below are essentially what the board would look like after the move.
+          # The only difference is a pawn is substituted for the King because I'm not sure I can create
+          # an instance of a class inside a class.
           hypothetical_pieces = pieces - [occupying_piece] - [current_piece] + [Pawn.new(square,@color)]
           if occupying_piece.color != @color
+            # checks if king (or pawn, more accurately) is in check on hypothetical board
             all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(hypothetical_pieces).include?(square) }
           end
         end

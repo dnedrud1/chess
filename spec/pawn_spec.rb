@@ -19,6 +19,7 @@ describe Pawn do
   describe 'movement' do
     it 'has correct number of available moves' do
       expect(pawn.available_moves(empty_board).count).to eql 2
+      expect(black_pawn.available_moves(empty_board).count).to eql 2
     end
     it 'moves to an empty space' do
       pawn.move([4,2],empty_board)
