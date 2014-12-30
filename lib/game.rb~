@@ -19,11 +19,13 @@ class Chess
     puts "---------------------------"
     puts "Make a move by entering coordinates of piece and destination in this format:"
     puts "row,column to row,column"
-    puts "e.g. 2,3 to 2,5"
+    puts "e.g. \"2,3 to 2,5\""
     puts "Enter \"help\" at any time for further information"
     
-  	until victory?("white") || victory?("black")
+  	until check_mate?("white") || check_mate?("black")
   	  color = @turn % 2 == 0 ? "black" : "white"
+  	  
+  	  puts "#{color} is in CHECKKKKKKKKKKKKKKKKKKK!!!!" if check?(color)
   	  
 			puts display_board()
 			puts "#{color.capitalize} moves."
@@ -88,9 +90,30 @@ class Chess
     "  1 2 3 4 5 6 7 8\n" + board_rows.map { |row| (number -= 1).to_s + " " + row.join(" ") }.join("\n")
   end
   
-  def victory?(color)
+  def check?(color)
+	  king = @pieces.find { |piece| piece.color == color && piece.class == King }
+	  enemy_pieces = @pieces.select { |i| i.color != color }
+	  enemy_moves = enemy_pieces.inject([]) { |sum,piece| sum + piece.available_moves(@pieces) }
+		
+		if enemy_moves.any? { |move| move == king.position }
+		  true
+		else
+		  false
+		end
+	end 
+	
+  def check_mate?(color)
+    #piece_placeholders = @pieces.map { |piece| piece.dup }
+		#player_pieces = piece_placeholders.select { |piece| piece.color == color }
+		
+		#answer = false
+		#player_pieces.each do |player_piece|
+		  
+		#end
     false
   end
+  
+
   
   private
   
@@ -107,5 +130,5 @@ class Chess
   
 end
 
-#chess = Chess.new
-#chess.start
+chess = Chess.new
+chess.start

@@ -2,6 +2,7 @@
 # by Daniel Nedrud
 # 12/28/2014
 
+# The chess board is just a two dimensional array of coordinates i.e. [1,1],[1,2]...
 class Chess_board
   attr_accessor :squares
 
@@ -11,6 +12,7 @@ class Chess_board
   end
 end
 
+# Pawn piece
 class Pawn
   attr_accessor(:position,:color,:moves,:symbol)
 
@@ -75,6 +77,7 @@ class Pawn
   end
 end
 
+# Knight piece
 class Knight
   attr_accessor(:position,:color,:symbol)
 
@@ -112,6 +115,7 @@ class Knight
   end
 end
 
+# Bishop piece
 class Bishop
   attr_accessor(:position,:color,:symbol)
 
@@ -161,6 +165,7 @@ class Bishop
   end
 end
 
+# Rook piece
 class Rook
   attr_accessor(:position,:color,:moves,:symbol)
 
@@ -214,6 +219,7 @@ class Rook
   end
 end
 
+# Queen piece
 class Queen
   attr_accessor(:position,:color,:symbol)
 
@@ -263,6 +269,7 @@ class Queen
   end
 end
 
+# King piece
 class King
   attr_accessor(:position,:color,:moves,:symbol)
 
@@ -273,12 +280,25 @@ class King
     @symbol = @color == "white" ? "♔" : "♚"
   end
   
+  # Allows King to be included when checking if oppoponent's King is moving into check.
+  def unchecked_moves
+    row = @position[0]
+    column = @position[1]
+    [[row + 1,column + 1],[row - 1,column - 1],[row - 1,column + 1],[row + 1,column - 1],[row,column + 1],[row,column - 1],[row - 1,column],[row + 1,column]]
+  end
+  
   def available_moves(pieces)  
     board = Chess_board.new.squares
     piece_positions = pieces.map { |piece| piece.position }
     row = @position[0]
     column = @position[1]
-    enemy_pieces = pieces.select { |piece| piece.color != @color }
+    # It is necessary to seperate enemy king from other pieces because calling available_moves on enemy king creates
+    # an infinite loop as it must in turn call available_moves on opposite colored king.
+    # That is why unchecked_moves exists.
+    enemy_pieces_minus_king = pieces.select { |piece| piece.color != @color && piece.class != King }
+    enemy_king = pieces.find { |piece| piece.color != @color && piece.class == King }
+    enemy_moves = enemy_pieces_minus_king.inject([]) { |sum,piece| sum + piece.available_moves(pieces) }
+    enemy_moves += enemy_king.unchecked_moves if enemy_king
     
     all_unchecked = [[row + 1,column + 1],[row - 1,column - 1],[row - 1,column + 1],[row + 1,column - 1],[row,column + 1],[row,column - 1],[row - 1,column],[row + 1,column]]
     all_checked = []
@@ -286,7 +306,7 @@ class King
       if board.include?(square)
         if !piece_positions.include?(square)
           # checks that the targeted empty space is not an "available move" for an enemy piece
-          all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(pieces).include?(square) }
+          all_checked.push(square) unless enemy_moves.any? { |move| move == square }
         else
           occupying_piece = pieces.find { |piece| piece.position == square }
           current_piece = pieces.find { |piece| piece.position == @position }
@@ -294,9 +314,13 @@ class King
           # The only difference is a pawn is substituted for the King because I'm not sure I can create
           # an instance of a class inside a class.
           hypothetical_pieces = pieces - [occupying_piece] - [current_piece] + [Pawn.new(square,@color)]
+          hypothetical_enemy_pieces_minus_king = hypothetical_pieces.select { |piece| piece.color != @color && piece.class != King }
+					hypothetical_enemy_moves = hypothetical_enemy_pieces_minus_king.inject([]) { |sum,piece| sum + piece.available_moves(hypothetical_pieces) }
+					hypothetical_enemy_moves += enemy_king.unchecked_moves if enemy_king
+					
           if occupying_piece.color != @color
             # checks if king (or pawn, more accurately) is in check on hypothetical board
-            all_checked.push(square) unless enemy_pieces.any? { |piece| piece.available_moves(hypothetical_pieces).include?(square) }
+            all_checked.push(square) unless hypothetical_enemy_moves.any? { |move| move == square }
           end
         end
       end
