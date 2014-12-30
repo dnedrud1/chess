@@ -38,7 +38,7 @@ describe King do
     end
   end
   
-  describe 'moving into check' do
+  describe 'check' do
     it 'can not move into check' do
       king.move([1,5],check_board)
       expect(king.position).to eql [1,4]
