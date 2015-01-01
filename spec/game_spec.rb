@@ -37,5 +37,45 @@ describe Chess do
       expect(chess_game.display_board).to eql target_board
     end
   end
+  
+  describe '#check' do
+    let(:situation1) { [King.new([1,4],"white"),Queen.new([8,4],"black")] }
+    let(:situation2) { [King.new([1,4],"black"),Queen.new([8,4],"white")] }
+    let(:situation3) { [King.new([1,4],"white"),Queen.new([8,4],"black"),Pawn.new([2,4],"white")] }
+    
+    it 'returns true when king is in check' do
+      expect(chess_game.check?("white",situation1)).to be_truthy
+    end
+    it 'returns true when colors reversed' do
+      expect(chess_game.check?("black",situation2)).to be_truthy
+    end
+    it 'return false when friendly piece is blocking' do
+      expect(chess_game.check?("white",situation3)).to be_falsey
+    end
+  end
+  
+  describe '#checkmate' do
+    let(:situation1) { [King.new([1,4],"white"),King.new([3,4],"black"),Queen.new([1,1],"black")] }
+    let(:situation2) { [King.new([1,4],"black"),King.new([3,4],"white"),Queen.new([1,1],"white")] }
+    let(:situation3) { [King.new([1,4],"white"),King.new([3,3],"black"),Queen.new([1,1],"black")] }
+    let(:situation4) { [King.new([1,8],"white"),Bishop.new([4,6],"black"),Rook.new([8,7],"black"),Knight.new([2,6],"black")] }
+    
+    it 'returns true when king is checkmated by king and queen' do
+      chess_game.pieces = situation1
+      expect(chess_game.checkmate?("white")).to be_truthy
+    end
+    it 'returns true when colors reversed' do
+      chess_game.pieces = situation2
+      expect(chess_game.checkmate?("black")).to be_truthy
+    end
+    it 'returns false when king has way out' do
+      chess_game.pieces = situation3
+      expect(chess_game.checkmate?("white")).to be_falsey
+    end
+    it 'returns true when king checkmated by rook, bishop, and knight' do
+      chess_game.pieces = situation4
+      expect(chess_game.checkmate?("white")).to be_truthy
+    end
+  end
 
 end

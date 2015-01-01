@@ -22,15 +22,19 @@ class Chess
     puts "e.g. \"2,3 to 2,5\""
     puts "Enter \"help\" at any time for further information"
     
-  	until check_mate?("white") || check_mate?("black")
+  	until checkmate?("white") || checkmate?("black")
   	  color = @turn % 2 == 0 ? "black" : "white"
   	  
-  	  puts "#{color} is in CHECKKKKKKKKKKKKKKKKKKK!!!!" if check?(color)
+  	  puts "#{color} is in CHECKKKKKKKKKKKKKKKKKKK!!!!" if check?(color,@pieces)
   	  
 			puts display_board()
 			puts "#{color.capitalize} moves."
       player_move(color)
 		end
+		
+		puts "Checkmate! #{color.capitalize} wins!"
+		puts display_board()
+		
 	end
 	
 	def player_move(color)
@@ -90,10 +94,10 @@ class Chess
     "  1 2 3 4 5 6 7 8\n" + board_rows.map { |row| (number -= 1).to_s + " " + row.join(" ") }.join("\n")
   end
   
-  def check?(color)
-	  king = @pieces.find { |piece| piece.color == color && piece.class == King }
-	  enemy_pieces = @pieces.select { |i| i.color != color }
-	  enemy_moves = enemy_pieces.inject([]) { |sum,piece| sum + piece.available_moves(@pieces) }
+  def check?(color,pieces)
+	  king = pieces.find { |piece| piece.color == color && piece.class == King }
+	  enemy_pieces = pieces.select { |i| i.color != color }
+	  enemy_moves = enemy_pieces.inject([]) { |sum,piece| sum + piece.available_moves(pieces) }
 		
 		if enemy_moves.any? { |move| move == king.position }
 		  true
@@ -102,15 +106,24 @@ class Chess
 		end
 	end 
 	
-  def check_mate?(color)
-    #piece_placeholders = @pieces.map { |piece| piece.dup }
-		#player_pieces = piece_placeholders.select { |piece| piece.color == color }
+  def checkmate?(color)
+    piece_placeholders = @pieces.map { |piece| piece.dup }
+		player_pieces = piece_placeholders.select { |piece| piece.color == color }
 		
-		#answer = false
-		#player_pieces.each do |player_piece|
-		  
-		#end
-    false
+		answer = true
+		if !check?(color,@pieces)
+		  answer = false
+	  else
+		  player_pieces.each do |player_piece|
+		    player_piece.available_moves(piece_placeholders).each do |move|
+		      position_placeholder = player_piece.position.dup
+		      player_piece.move(move,piece_placeholders)
+		      answer = false if !check?(color,piece_placeholders)
+		      player_piece.position = position_placeholder
+		    end
+	    end
+		end
+    answer
   end
   
 
@@ -130,5 +143,5 @@ class Chess
   
 end
 
-chess = Chess.new
-chess.start
+#chess = Chess.new
+#chess.start
