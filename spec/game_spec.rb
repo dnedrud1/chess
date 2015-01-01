@@ -59,6 +59,7 @@ describe Chess do
     let(:situation2) { [King.new([1,4],"black"),King.new([3,4],"white"),Queen.new([1,1],"white")] }
     let(:situation3) { [King.new([1,4],"white"),King.new([3,3],"black"),Queen.new([1,1],"black")] }
     let(:situation4) { [King.new([1,8],"white"),Bishop.new([4,6],"black"),Rook.new([8,7],"black"),Knight.new([2,6],"black")] }
+    let(:situation5) { [King.new([1,4],"white"),Pawn.new([2,3],"black"),Pawn.new([3,4],"black"),Pawn.new([2,5],"black")] }
     
     it 'returns true when king is checkmated by king and queen' do
       chess_game.pieces = situation1
@@ -75,6 +76,10 @@ describe Chess do
     it 'returns true when king checkmated by rook, bishop, and knight' do
       chess_game.pieces = situation4
       expect(chess_game.checkmate?("white")).to be_truthy
+    end
+    it 'returns false when king checked by three pawns' do
+      chess_game.pieces = situation5
+      expect(chess_game.checkmate?("white")).to be_falsey
     end
   end
 

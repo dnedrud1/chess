@@ -6,7 +6,7 @@ require_relative '../lib/board_and_pieces'
 
 class Chess
   
-  attr_accessor(:board,:pieces,:white_pieces,:black_pieces)
+  attr_accessor(:board,:pieces,:turn)
   
   def initialize
     @board = Chess_board.new
@@ -37,6 +37,23 @@ class Chess
 		
 	end
 	
+	# duplicates board and returns array of all possible moves formatted as proper text input
+	def all_available_moves(color)
+    piece_placeholders = @pieces.map { |piece| piece.dup }
+		player_pieces = piece_placeholders.select { |piece| piece.color == color }
+		
+    all_moves = []
+	  player_pieces.each do |player_piece|
+	    player_piece.available_moves(piece_placeholders).each do |move|
+	      position_placeholder = player_piece.position.dup
+	      player_piece.move(move,piece_placeholders)
+	      all_moves.push("#{position_placeholder.join(",")}"+" to "+"#{move.join(",")}") if !check?(color,piece_placeholders)
+	      player_piece.position = position_placeholder
+	    end
+    end
+    all_moves
+	end
+	
 	def player_move(color)
 	  available_pieces = @pieces.select { |i| i.color == color }
 	  enemy_pieces = @pieces.select { |i| i.color != color }
@@ -44,34 +61,19 @@ class Chess
 	  input = gets.chomp
 	  input_array = input.split(" ")
 	  
-	  # checks basic formatting of input
-	  if input_array.length == 3 && input_array[1] == "to"
+	  # checks that piece was selected and move available as well as formatting of input
+	  if all_available_moves(color).include?(input)
 			piece_position = input_array[0].split(",").map { |i| i.to_i }
 			piece_destination = input_array[2].split(",").map { |i| i.to_i }
 			piece_selected = available_pieces.find { |piece| piece.position == piece_position }
 			
-			# checks that piece was actually selected
-			if piece_selected
-			
-			  # checks that move is valid
-			  if piece_selected.available_moves(@pieces).include?(piece_destination)
-			    possible_taken_piece = enemy_pieces.find { |piece| piece.position == piece_destination }
-			    piece_selected.move(piece_destination,@pieces)
-			    
-			    # deletes enemy piece if space was enemy occupied
-			    if possible_taken_piece
-			      @pieces.delete(possible_taken_piece)
-			    end
-			    
-			    @turn += 1
-			  else
-			  	puts "Please enter a valid move!"
-	        puts "e.g. \"2,3 to 2,5\""
-        end
-			else
-				puts "Please enter a valid move!"
-			  puts "e.g. \"2,3 to 2,5\""
-			end
+	    possible_taken_piece = enemy_pieces.find { |piece| piece.position == piece_destination }
+	    piece_selected.move(piece_destination,@pieces)
+	    
+	    # deletes enemy piece if space was enemy occupied
+	    @pieces.delete(possible_taken_piece) if possible_taken_piece
+	    
+	    @turn += 1
 		else
 		  puts "Please enter a valid move!"
 	    puts "e.g. \"2,3 to 2,5\""
@@ -126,8 +128,6 @@ class Chess
     answer
   end
   
-
-  
   private
   
   def setup_pieces
@@ -143,5 +143,6 @@ class Chess
   
 end
 
-#chess = Chess.new
-#chess.start
+chess = Chess.new
+chess.start
+
