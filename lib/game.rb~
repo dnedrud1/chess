@@ -45,9 +45,19 @@ class Chess
     all_moves = []
 	  player_pieces.each do |player_piece|
 	    player_piece.available_moves(piece_placeholders).each do |move|
+	      # selects piece to move and captured piece if one exists
 	      position_placeholder = player_piece.position.dup
+	      captured_placeholder = piece_placeholders.find { |piece| piece.position == move }
+	      
+	      # moves piece and deletes captured piece if one exists
+	      piece_placeholders.delete(captured_placeholder) if captured_placeholder
 	      player_piece.move(move,piece_placeholders)
+	      
+	      # adds move to array if it is valid
 	      all_moves.push("#{position_placeholder.join(",")}"+" to "+"#{move.join(",")}") if !check?(color,piece_placeholders)
+	      
+	      # resets pieces
+	      piece_placeholders += captured_placeholder if captured_placeholder
 	      player_piece.position = position_placeholder
 	    end
     end
@@ -109,23 +119,11 @@ class Chess
 	end 
 	
   def checkmate?(color)
-    piece_placeholders = @pieces.map { |piece| piece.dup }
-		player_pieces = piece_placeholders.select { |piece| piece.color == color }
-		
-		answer = true
-		if !check?(color,@pieces)
-		  answer = false
+		if check?(color,@pieces) && all_available_moves(color).count == 0
+		  true
 	  else
-		  player_pieces.each do |player_piece|
-		    player_piece.available_moves(piece_placeholders).each do |move|
-		      position_placeholder = player_piece.position.dup
-		      player_piece.move(move,piece_placeholders)
-		      answer = false if !check?(color,piece_placeholders)
-		      player_piece.position = position_placeholder
-		    end
-	    end
+      false
 		end
-    answer
   end
   
   private
@@ -143,6 +141,6 @@ class Chess
   
 end
 
-chess = Chess.new
-chess.start
+#chess = Chess.new
+#chess.start
 
