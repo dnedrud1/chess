@@ -64,13 +64,21 @@ describe Chess do
     it 'king can not move into check' do
       chess_game.pieces = situation4
       allow(chess_game).to receive(:gets) { "1,4 to 1,5" }
+<<<<<<< HEAD
       expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 4,3\"")
+=======
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 2,5\"")
+>>>>>>> 6839c0068e3cfd858b654744f5ccfbf47f99d914
       chess_game.player_move("white")
     end
     it 'king can not take covered piece' do
       chess_game.pieces = situation4
       allow(chess_game).to receive(:gets) { "1,4 to 2.3" }
+<<<<<<< HEAD
       expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 4,3\"")
+=======
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 2,5\"")
+>>>>>>> 6839c0068e3cfd858b654744f5ccfbf47f99d914
       chess_game.player_move("white")
     end
   end
