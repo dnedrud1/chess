@@ -38,10 +38,19 @@ describe Chess do
     end
   end
   
-  describe '#check' do
+  describe 'input' do
+    
+  end
+  
+  describe 'movement' do
+    
+  end
+  
+  describe '#check?' do
     let(:situation1) { [King.new([1,4],"white"),Queen.new([8,4],"black")] }
     let(:situation2) { [King.new([1,4],"black"),Queen.new([8,4],"white")] }
     let(:situation3) { [King.new([1,4],"white"),Queen.new([8,4],"black"),Pawn.new([2,4],"white")] }
+    let(:situation4) { [King.new([1,4],"white"),Rook.new([8,5],"black"),Bishop.new([2,3],"black"),Queen.new([5,6],"black")] }
     
     it 'returns true when king is in check' do
       expect(chess_game.check?("white",situation1)).to be_truthy
@@ -52,9 +61,21 @@ describe Chess do
     it 'return false when friendly piece is blocking' do
       expect(chess_game.check?("white",situation3)).to be_falsey
     end
+    it 'king can not move into check' do
+      chess_game.pieces = situation4
+      allow(chess_game).to receive(:gets) { "1,4 to 1,5" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 2,5\"")
+      chess_game.player_move("white")
+    end
+    it 'king can not take covered piece' do
+      chess_game.pieces = situation4
+      allow(chess_game).to receive(:gets) { "1,4 to 2.3" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 2,5\"")
+      chess_game.player_move("white")
+    end
   end
   
-  describe '#checkmate' do
+  describe '#checkmate?' do
     let(:situation1) { [King.new([1,4],"white"),King.new([3,4],"black"),Queen.new([1,1],"black")] }
     let(:situation2) { [King.new([1,4],"black"),King.new([3,4],"white"),Queen.new([1,1],"white")] }
     let(:situation3) { [King.new([1,4],"white"),King.new([3,3],"black"),Queen.new([1,1],"black")] }
