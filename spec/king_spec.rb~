@@ -38,17 +38,6 @@ describe King do
     end
   end
   
-  describe 'moving into check' do
-    it 'can not move into check' do
-      king.move([1,5],check_board)
-      expect(king.position).to eql [1,4]
-    end
-    it 'can not take covered piece' do
-      king.move([2,3],check_board)
-      expect(king.position).to eql [1,4]
-    end
-  end
-  
   describe 'taking enemy piece' do
     it 'moves into enemy occupied space' do
       king.move([2,4],board_with_pawns)

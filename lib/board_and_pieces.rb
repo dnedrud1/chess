@@ -280,47 +280,22 @@ class King
     @symbol = @color == "white" ? "♔" : "♚"
   end
   
-  # Allows King to be included when checking if oppoponent's King is moving into check.
-  def unchecked_moves
-    row = @position[0]
-    column = @position[1]
-    [[row + 1,column + 1],[row - 1,column - 1],[row - 1,column + 1],[row + 1,column - 1],[row,column + 1],[row,column - 1],[row - 1,column],[row + 1,column]]
-  end
-  
   def available_moves(pieces)  
     board = Chess_board.new.squares
     piece_positions = pieces.map { |piece| piece.position }
     row = @position[0]
     column = @position[1]
-    # It is necessary to seperate enemy king from other pieces because calling available_moves on enemy king creates
-    # an infinite loop as it must in turn call available_moves on opposite colored king.
-    # That is why unchecked_moves exists.
-    enemy_pieces_minus_king = pieces.select { |piece| piece.color != @color && piece.class != King }
-    enemy_king = pieces.find { |piece| piece.color != @color && piece.class == King }
-    enemy_moves = enemy_pieces_minus_king.inject([]) { |sum,piece| sum + piece.available_moves(pieces) }
-    enemy_moves += enemy_king.unchecked_moves if enemy_king
     
     all_unchecked = [[row + 1,column + 1],[row - 1,column - 1],[row - 1,column + 1],[row + 1,column - 1],[row,column + 1],[row,column - 1],[row - 1,column],[row + 1,column]]
     all_checked = []
     all_unchecked.each do |square|
       if board.include?(square)
         if !piece_positions.include?(square)
-          # checks that the targeted empty space is not an "available move" for an enemy piece
-          all_checked.push(square) unless enemy_moves.any? { |move| move == square }
+          all_checked.push(square)
         else
           occupying_piece = pieces.find { |piece| piece.position == square }
-          current_piece = pieces.find { |piece| piece.position == @position }
-          # These hypothetical pieces below are essentially what the board would look like after the move.
-          # The only difference is a pawn is substituted for the King because I'm not sure I can create
-          # an instance of a class inside a class.
-          hypothetical_pieces = pieces - [occupying_piece] - [current_piece] + [Pawn.new(square,@color)]
-          hypothetical_enemy_pieces_minus_king = hypothetical_pieces.select { |piece| piece.color != @color && piece.class != King }
-					hypothetical_enemy_moves = hypothetical_enemy_pieces_minus_king.inject([]) { |sum,piece| sum + piece.available_moves(hypothetical_pieces) }
-					hypothetical_enemy_moves += enemy_king.unchecked_moves if enemy_king
-					
           if occupying_piece.color != @color
-            # checks if king (or pawn, more accurately) is in check on hypothetical board
-            all_checked.push(square) unless hypothetical_enemy_moves.any? { |move| move == square }
+            all_checked.push(square)
           end
         end
       end

@@ -19,13 +19,13 @@ class Chess
     puts "---------------------------"
     puts "Make a move by entering coordinates of piece and destination in this format:"
     puts "row,column to row,column"
-    puts "e.g. \"2,3 to 2,5\""
+    puts "e.g. \"2,3 to 4,3\""
     puts "Enter \"help\" at any time for further information"
     
   	until checkmate?("white") || checkmate?("black")
   	  color = @turn % 2 == 0 ? "black" : "white"
   	  
-  	  puts "#{color} is in CHECKKKKKKKKKKKKKKKKKKK!!!!" if check?(color,@pieces)
+  	  puts "#{color.capitalize} is in check!" if check?(color,@pieces)
   	  
 			puts display_board()
 			puts "#{color.capitalize} moves."
@@ -57,7 +57,7 @@ class Chess
 	      all_moves.push("#{position_placeholder.join(",")}"+" to "+"#{move.join(",")}") if !check?(color,piece_placeholders)
 	      
 	      # resets pieces
-	      piece_placeholders += captured_placeholder if captured_placeholder
+	      piece_placeholders += [captured_placeholder] if captured_placeholder
 	      player_piece.position = position_placeholder
 	    end
     end
@@ -85,8 +85,7 @@ class Chess
 	    
 	    @turn += 1
 		else
-		  puts "Please enter a valid move!"
-	    puts "e.g. \"2,3 to 2,5\""
+		  puts "Please enter a valid move!\ne.g. \"2,3 to 4,3\""
     end
 	end
   
