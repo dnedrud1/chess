@@ -33,7 +33,7 @@ describe Chess do
   
   describe '#display_board' do
     it 'displays starting board correctly' do
-      target_board = "  1 2 3 4 5 6 7 8\n8 ♜ ♞ ♝ ♚ ♛ ♝ ♞ ♜\n7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n6 _ _ _ _ _ _ _ _\n5 _ _ _ _ _ _ _ _\n4 _ _ _ _ _ _ _ _\n3 _ _ _ _ _ _ _ _\n2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n1 ♖ ♘ ♗ ♔ ♕ ♗ ♘ ♖"
+      target_board = "  a b c d e f g h\n8 ♜ ♞ ♝ ♚ ♛ ♝ ♞ ♜\n7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n6 _ _ _ _ _ _ _ _\n5 _ _ _ _ _ _ _ _\n4 _ _ _ _ _ _ _ _\n3 _ _ _ _ _ _ _ _\n2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n1 ♖ ♘ ♗ ♔ ♕ ♗ ♘ ♖"
       expect(chess_game.display_board).to eql target_board
     end
   end
@@ -43,7 +43,28 @@ describe Chess do
   end
   
   describe 'movement' do
+    let(:queen) { Queen.new([4,4],"white") }
+    let(:pawn) { Pawn.new([4,1],"black") }
+    let(:situation1) {[queen,pawn]}
     
+    it 'allows piece to move' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "d4 to h8" }
+      chess_game.player_move("white")
+      expect(queen.position).to eql [8,8]
+    end
+    it 'doesnt allow invalid move' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "d4 to g8" }
+      chess_game.player_move("white")
+      expect(queen.position).to eql [4,4]
+    end
+    it 'remove piece from board when it is taken' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "d4 to a4" }
+      chess_game.player_move("white")
+      expect(situation1.count).to eql 1
+    end
   end
   
   describe '#check?' do
@@ -63,14 +84,14 @@ describe Chess do
     end
     it 'king can not move into check' do
       chess_game.pieces = situation4
-      allow(chess_game).to receive(:gets) { "1,4 to 1,5" }
-      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 4,3\"")
+      allow(chess_game).to receive(:gets) { "d1 to e1" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
       chess_game.player_move("white")
     end
     it 'king can not take covered piece' do
       chess_game.pieces = situation4
-      allow(chess_game).to receive(:gets) { "1,4 to 2.3" }
-      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"2,3 to 4,3\"")
+      allow(chess_game).to receive(:gets) { "d1 to c2" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
       chess_game.player_move("white")
     end
   end

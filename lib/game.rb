@@ -18,8 +18,8 @@ class Chess
     puts "Welcome to a game of Chess!"
     puts "---------------------------"
     puts "Make a move by entering coordinates of piece and destination in this format:"
-    puts "row,column to row,column"
-    puts "e.g. \"2,3 to 4,3\""
+    puts "ColumnRow to ColumnRow"
+    puts "e.g. \"b2 to b4\""
     puts "Enter \"help\" at any time for further information"
     
   	until checkmate?("white") || checkmate?("black")
@@ -54,7 +54,7 @@ class Chess
 	      player_piece.move(move,piece_placeholders)
 	      
 	      # adds move to array if it is valid
-	      all_moves.push("#{position_placeholder.join(",")}"+" to "+"#{move.join(",")}") if !check?(color,piece_placeholders)
+	      all_moves.push(["#{position_placeholder.join("")}","#{move.join("")}"]) if !check?(color,piece_placeholders)
 	      
 	      # resets pieces
 	      piece_placeholders += [captured_placeholder] if captured_placeholder
@@ -64,17 +64,28 @@ class Chess
     all_moves
 	end
 	
+	def coordinates_to_arr(input)
+	  key = {"a" => "1", "b" => "2", "c" => "3", "d" => "4", "e" => "5", "f" => "6", "g" => "7", "h" => "8"}
+	  input_arr = input.split(" ")
+	  if input_arr.length == 3 && input_arr[0].length == 2 && input_arr[2].length == 2
+	    position = input_arr[0].split("")
+	    destination = input_arr[2].split("")
+	    ["#{position[1]}#{key[position[0]]}","#{destination[1]}#{key[destination[0]]}"]
+    else
+      "invalid input"
+    end
+	end
+	
 	def player_move(color)
 	  available_pieces = @pieces.select { |i| i.color == color }
 	  enemy_pieces = @pieces.select { |i| i.color != color }
 	  
-	  input = gets.chomp
-	  input_array = input.split(" ")
+	  input_array = coordinates_to_arr(gets.chomp)
 	  
 	  # checks that piece was selected and move available as well as formatting of input
-	  if all_available_moves(color).include?(input)
-			piece_position = input_array[0].split(",").map { |i| i.to_i }
-			piece_destination = input_array[2].split(",").map { |i| i.to_i }
+	  if all_available_moves(color).include?(input_array)
+			piece_position = input_array[0].split("").map { |i| i.to_i }
+			piece_destination = input_array[1].split("").map { |i| i.to_i }
 			piece_selected = available_pieces.find { |piece| piece.position == piece_position }
 			
 	    possible_taken_piece = enemy_pieces.find { |piece| piece.position == piece_destination }
@@ -85,7 +96,7 @@ class Chess
 	    
 	    @turn += 1
 		else
-		  puts "Please enter a valid move!\ne.g. \"2,3 to 4,3\""
+		  puts "Please enter a valid move!\ne.g. \"b2 to b4\""
     end
 	end
   
@@ -102,7 +113,7 @@ class Chess
     end
     board_rows = board_with_pieces.each_slice(8).to_a.reverse
     number = 9
-    "  1 2 3 4 5 6 7 8\n" + board_rows.map { |row| (number -= 1).to_s + " " + row.join(" ") }.join("\n")
+    "  a b c d e f g h\n" + board_rows.map { |row| (number -= 1).to_s + " " + row.join(" ") }.join("\n")
   end
   
   def check?(color,pieces)
@@ -110,8 +121,12 @@ class Chess
 	  enemy_pieces = pieces.select { |i| i.color != color }
 	  enemy_moves = enemy_pieces.inject([]) { |sum,piece| sum + piece.available_moves(pieces) }
 		
-		if enemy_moves.any? { |move| move == king.position }
-		  true
+		if king
+			if enemy_moves.any? { |move| move == king.position }
+				true
+			else
+				false
+			end
 		else
 		  false
 		end
@@ -140,6 +155,6 @@ class Chess
   
 end
 
-#chess = Chess.new
+chess = Chess.new
 #chess.start
 
