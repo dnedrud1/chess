@@ -50,19 +50,19 @@ describe Chess do
     it 'allows piece to move' do
       chess_game.pieces = situation1
       allow(chess_game).to receive(:gets) { "d4 to h8" }
-      chess_game.player_move("white")
+      chess_game.player_input("white")
       expect(queen.position).to eql [8,8]
     end
     it 'doesnt allow invalid move' do
       chess_game.pieces = situation1
       allow(chess_game).to receive(:gets) { "d4 to g8" }
-      chess_game.player_move("white")
+      chess_game.player_input("white")
       expect(queen.position).to eql [4,4]
     end
     it 'remove piece from board when it is taken' do
       chess_game.pieces = situation1
       allow(chess_game).to receive(:gets) { "d4 to a4" }
-      chess_game.player_move("white")
+      chess_game.player_input("white")
       expect(situation1.count).to eql 1
     end
   end
@@ -86,13 +86,13 @@ describe Chess do
       chess_game.pieces = situation4
       allow(chess_game).to receive(:gets) { "d1 to e1" }
       expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
-      chess_game.player_move("white")
+      chess_game.player_input("white")
     end
     it 'king can not take covered piece' do
       chess_game.pieces = situation4
       allow(chess_game).to receive(:gets) { "d1 to c2" }
       expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
-      chess_game.player_move("white")
+      chess_game.player_input("white")
     end
   end
   

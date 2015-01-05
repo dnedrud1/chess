@@ -15,25 +15,27 @@ class Chess
   end
   
   def start
-    puts "Welcome to a game of Chess!"
+    puts "\n\nWelcome to a game of Chess!"
     puts "---------------------------"
     puts "Make a move by entering coordinates of piece and destination in this format:"
-    puts "ColumnRow to ColumnRow"
-    puts "e.g. \"b2 to b4\""
+    puts "\"b2 to b4\""
     puts "Enter \"help\" at any time for further information"
+    puts display_board()
     
-  	until checkmate?("white") || checkmate?("black")
+    @exit = false
+  	until checkmate?("white") || checkmate?("black") || @exit == true
   	  color = @turn % 2 == 0 ? "black" : "white"
   	  
   	  puts "#{color.capitalize} is in check!" if check?(color,@pieces)
   	  
-			puts display_board()
 			puts "#{color.capitalize} moves."
-      player_move(color)
+      player_input(color)
 		end
 		
-		puts "Checkmate! #{color.capitalize} wins!"
-		puts display_board()
+		if checkmate?("white") || checkmate?("black")
+			puts "Checkmate! #{color.capitalize} wins!"
+			puts display_board()
+		end
 		
 	end
 	
@@ -64,6 +66,22 @@ class Chess
     all_moves
 	end
 	
+	def player_input(color)
+	  input = gets.chomp
+	  
+	  case input
+	  when "help"
+	    help()
+	  when "castle left"
+	  when "castle right"
+	  when "save"
+	  when "exit"
+	    @exit = true
+	  else
+	    player_move(color,input)
+	  end
+	end
+	
 	def coordinates_to_arr(input)
 	  key = {"a" => "1", "b" => "2", "c" => "3", "d" => "4", "e" => "5", "f" => "6", "g" => "7", "h" => "8"}
 	  input_arr = input.split(" ")
@@ -76,11 +94,11 @@ class Chess
     end
 	end
 	
-	def player_move(color)
+	def player_move(color,input)
 	  available_pieces = @pieces.select { |i| i.color == color }
 	  enemy_pieces = @pieces.select { |i| i.color != color }
 	  
-	  input_array = coordinates_to_arr(gets.chomp)
+	  input_array = coordinates_to_arr(input)
 	  
 	  # checks that piece was selected and move available as well as formatting of input
 	  if all_available_moves(color).include?(input_array)
@@ -94,6 +112,7 @@ class Chess
 	    # deletes enemy piece if space was enemy occupied
 	    @pieces.delete(possible_taken_piece) if possible_taken_piece
 	    
+	    puts display_board()
 	    @turn += 1
 		else
 		  puts "Please enter a valid move!\ne.g. \"b2 to b4\""
@@ -151,6 +170,17 @@ class Chess
     [Pawn.new([7,5],"black"),Pawn.new([7,6],"black"),Pawn.new([7,7],"black"),Pawn.new([7,8],"black")] +
     [Rook.new([8,1],"black"),Knight.new([8,2],"black"),Bishop.new([8,3],"black"),King.new([8,4],"black")] +
     [Queen.new([8,5],"black"),Bishop.new([8,6],"black"),Knight.new([8,7],"black"),Rook.new([8,8],"black")]
+  end
+  
+  def help
+    puts %Q{\nPlayer Help for Chess
+_____________________
+To move a piece to a chosen location
+enter movement command like so \"d4 to e5\".
+To castle enter either \"castle left\" or \"castle right\".
+To save your game enter \"save\".
+To exit a game midway through enter \"exit\".
+}
   end
   
 end
