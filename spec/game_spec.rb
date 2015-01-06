@@ -33,12 +33,15 @@ describe Chess do
   
   describe '#display_board' do
     it 'displays starting board correctly' do
-      target_board = "  a b c d e f g h\n8 ♜ ♞ ♝ ♚ ♛ ♝ ♞ ♜\n7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n6 _ _ _ _ _ _ _ _\n5 _ _ _ _ _ _ _ _\n4 _ _ _ _ _ _ _ _\n3 _ _ _ _ _ _ _ _\n2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n1 ♖ ♘ ♗ ♔ ♕ ♗ ♘ ♖"
+      target_board = "  a b c d e f g h\n8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜\n7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n6 _ _ _ _ _ _ _ _\n5 _ _ _ _ _ _ _ _\n4 _ _ _ _ _ _ _ _\n3 _ _ _ _ _ _ _ _\n2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖"
       expect(chess_game.display_board).to eql target_board
     end
   end
   
   describe 'input' do
+    let(:queen) { Queen.new([4,4],"white") }
+    
+    
     
   end
   
@@ -122,6 +125,60 @@ describe Chess do
     it 'returns false when king checked by three pawns' do
       chess_game.pieces = situation5
       expect(chess_game.checkmate?("white")).to be_falsey
+    end
+  end
+  
+  describe 'castling' do 
+    let(:situation1) { [King.new([1,5],"white"),Rook.new([1,1],"white"),Rook.new([1,8],"white")] }
+    let(:situation2) { [King.new([8,5],"black"),Rook.new([8,1],"black")] }
+    let(:situation3) { [King.new([1,5],"white"),Rook.new([1,1],"white"),Rook.new([8,3],"black")] }
+    let(:situation4) { [King.new([1,5],"white"),Rook.new([1,1],"white"),Knight.new([1,2],"white")] }
+    
+    it 'castles left' do
+      chess_game.pieces = situation1
+      king = situation1.find { |piece| piece.class == King }
+      allow(chess_game).to receive(:gets) { "castle left" }
+      chess_game.player_input("white")
+      expect(king.position).to eql [1,3]
+    end
+    
+    it 'castles left when black' do
+      chess_game.pieces = situation2
+      king = situation2.find { |piece| piece.class == King }
+      allow(chess_game).to receive(:gets) { "castle left" }
+      chess_game.player_input("black")
+      expect(king.position).to eql [8,3]
+    end
+    
+    it 'can not castle after piece has moved' do
+      chess_game.pieces = situation1
+      rook = situation1.find { |piece| piece.class == Rook && piece.position == [1,1] }
+      rook.move([1,4],situation1)
+      allow(chess_game).to receive(:gets) { "castle left" }
+      expect(chess_game).to receive(:puts).with("You can not castle left at this time.")
+      chess_game.player_input("white")
+    end
+    
+    it 'can not castle into check' do
+      chess_game.pieces = situation3
+      allow(chess_game).to receive(:gets) { "castle left" }
+      expect(chess_game).to receive(:puts).with("You can not castle left at this time.")
+      chess_game.player_input("white")
+    end
+    
+    it 'can not castle with pieces in between' do
+      chess_game.pieces = situation4
+      allow(chess_game).to receive(:gets) { "castle left" }
+      expect(chess_game).to receive(:puts).with("You can not castle left at this time.")
+      chess_game.player_input("white")
+    end
+    
+    it 'castles right' do
+      chess_game.pieces = situation1
+      king = situation1.find { |piece| piece.class == King }
+      allow(chess_game).to receive(:gets) { "castle right" }
+      chess_game.player_input("white")
+      expect(king.position).to eql [1,7]
     end
   end
 

@@ -3,6 +3,7 @@
 # 12/28/2014
 
 require_relative '../lib/board_and_pieces'
+require 'yaml'
 
 class Chess
   
@@ -14,10 +15,34 @@ class Chess
     @turn = 1
   end
   
+  # This is the method the user should call to start a game of Chess.
+  # It gives you the option of starting from scratch or loading a saved file.
   def start
-    puts "\n\nWelcome to a game of Chess!"
-    puts "---------------------------"
-    puts "Make a move by entering coordinates of piece and destination in this format:"
+    puts "\n\nWelcome to Chess!"
+    puts "_________________"
+    puts "Please enter \"play\" to start a new game or enter \"load\" to pick up an existing game."
+    response = gets.chomp.downcase
+    
+    until response == "play" || response == "load"
+    	puts "Oops! Please enter \"play\" or \"load\"."
+    	response = gets.chomp.downcase
+  	end
+  	
+  	case response
+  	when "play"
+  	  Chess.new.play
+	  when "load"
+	  	puts "Please enter the name of your saved file."
+	  	name = gets.chomp
+	    file = File.open("saves/#{name}.txt", "r")
+			contents = file.read
+			YAML::load(contents).play
+		end
+	end
+  
+  # This method starts gameplay
+  def play
+    puts "\nMake a move by entering coordinates of piece and destination in this format:"
     puts "\"b2 to b4\""
     puts "Enter \"help\" at any time for further information"
     puts display_board()
@@ -73,8 +98,12 @@ class Chess
 	  when "help"
 	    help()
 	  when "castle left"
+	    castle_left(color)
 	  when "castle right"
+	    castle_right(color)
 	  when "save"
+	    puts "Please enter a name for your file."
+	    save(gets.chomp)
 	  when "exit"
 	    @exit = true
 	  else
@@ -95,8 +124,8 @@ class Chess
 	end
 	
 	def player_move(color,input)
-	  available_pieces = @pieces.select { |i| i.color == color }
-	  enemy_pieces = @pieces.select { |i| i.color != color }
+	  available_pieces = @pieces.select { |piece| piece.color == color }
+	  enemy_pieces = @pieces.select { |piece| piece.color != color }
 	  
 	  input_array = coordinates_to_arr(input)
 	  
@@ -159,17 +188,93 @@ class Chess
 		end
   end
   
+  def castle_left(color)
+    king = @pieces.find { |piece| piece.class == King && piece.color == color && piece.moves == 0 }
+    rook = @pieces.find { |piece| piece.class == Rook && piece.color == color && piece.moves == 0 && [[1,1],[8,1]].include?(piece.position) }
+    
+    enemy_nonpawn_pieces = @pieces.select { |piece| piece.color != color && piece.class != Pawn }
+    enemy_pawns = @pieces.select { |piece| piece.color != color && piece.class == Pawn }
+    
+    if color == "white"
+      piece_attacking = enemy_nonpawn_pieces.any? { |piece| piece.available_moves(@pieces).any? { |move| [[1,3],[1,4],[1,5]].include?(move) } }
+      pawn_attacking = enemy_pawns.any? { |piece| [[2,2],[2,3],[2,4],[2,5],[2,6]].include?(piece.position) }
+      occupied_spaces = @pieces.any? { |piece| [[1,2],[1,3],[1,4]].include?(piece.position) }
+      if king && rook && !piece_attacking && !pawn_attacking && !occupied_spaces
+        king.position = [1,3]
+        rook.position = [1,4]
+        puts display_board()
+        @turn += 1
+      else
+        puts "You can not castle left at this time."
+      end
+    elsif color == "black"
+      piece_attacking = enemy_nonpawn_pieces.any? { |piece| piece.available_moves(@pieces).any? { |move| [[8,3],[8,4],[8,5]].include?(move) } }
+      pawn_attacking = enemy_pawns.any? { |piece| [[7,2],[7,3],[7,4],[7,5],[7,6]].include?(piece.position) }
+      occupied_spaces = @pieces.any? { |piece| [[8,2],[8,3],[8,4]].include?(piece.position) }
+      if king && rook && !piece_attacking && !pawn_attacking && !occupied_spaces
+        king.position = [8,3]
+        rook.position = [8,4]
+        puts display_board()
+        @turn += 1
+      else
+        puts "You can not castle left at this time."
+      end
+    end
+  end
+  
+  def castle_right(color)
+    king = @pieces.find { |piece| piece.class == King && piece.color == color && piece.moves == 0 }
+    rook = @pieces.find { |piece| piece.class == Rook && piece.color == color && piece.moves == 0 && [[1,8],[8,8]].include?(piece.position) }
+    
+    enemy_nonpawn_pieces = @pieces.select { |piece| piece.color != color && piece.class != Pawn }
+    enemy_pawns = @pieces.select { |piece| piece.color != color && piece.class == Pawn }
+    
+    if color == "white"
+      piece_attacking = enemy_nonpawn_pieces.any? { |piece| piece.available_moves(@pieces).any? { |move| [[1,5],[1,6],[1,7]].include?(move) } }
+      pawn_attacking = enemy_pawns.any? { |piece| [[2,4],[2,5],[2,6],[2,7],[2,8]].include?(piece.position) }
+      occupied_spaces = @pieces.any? { |piece| [[1,6],[1,7]].include?(piece.position) }
+      if king && rook && !piece_attacking && !pawn_attacking && !occupied_spaces
+        king.position = [1,7]
+        rook.position = [1,6]
+        puts display_board()
+        @turn += 1
+      else
+        puts "You can not castle right at this time."
+      end
+    elsif color == "black"
+      piece_attacking = enemy_nonpawn_pieces.any? { |piece| piece.available_moves(@pieces).any? { |move| [[8,5],[8,6],[8,7]].include?(move) } }
+      pawn_attacking = enemy_pawns.any? { |piece| [[7,4],[7,5],[7,6],[7,7],[7,8]].include?(piece.position) }
+      occupied_spaces = @pieces.any? { |piece| [[8,6],[8,7]].include?(piece.position) }
+      if king && rook && !piece_attacking && !pawn_attacking && !occupied_spaces
+        king.position = [8,7]
+        rook.position = [8,6]
+        puts display_board()
+        @turn += 1
+      else
+        puts "You can not castle right at this time."
+      end
+    end
+  end
+  
   private
+  
+  # Saves the player's current position in YAML format to a file of their choice in the folder "saves".
+  def save(name)
+    yaml = YAML::dump(self)
+    file_name = "#{name}.txt"
+    File.open("saves/" + file_name, "w") { |i| i.write(yaml) }
+    puts "Game was saved as \"#{name}\""
+  end
   
   def setup_pieces
     [Pawn.new([2,1],"white"),Pawn.new([2,2],"white"),Pawn.new([2,3],"white"),Pawn.new([2,4],"white")] +
     [Pawn.new([2,5],"white"),Pawn.new([2,6],"white"),Pawn.new([2,7],"white"),Pawn.new([2,8],"white")] +
-    [Rook.new([1,1],"white"),Knight.new([1,2],"white"),Bishop.new([1,3],"white"),King.new([1,4],"white")] +
-    [Queen.new([1,5],"white"),Bishop.new([1,6],"white"),Knight.new([1,7],"white"),Rook.new([1,8],"white")] +
+    [Rook.new([1,1],"white"),Knight.new([1,2],"white"),Bishop.new([1,3],"white"),Queen.new([1,4],"white")] +
+    [King.new([1,5],"white"),Bishop.new([1,6],"white"),Knight.new([1,7],"white"),Rook.new([1,8],"white")] +
     [Pawn.new([7,1],"black"),Pawn.new([7,2],"black"),Pawn.new([7,3],"black"),Pawn.new([7,4],"black")] +
     [Pawn.new([7,5],"black"),Pawn.new([7,6],"black"),Pawn.new([7,7],"black"),Pawn.new([7,8],"black")] +
-    [Rook.new([8,1],"black"),Knight.new([8,2],"black"),Bishop.new([8,3],"black"),King.new([8,4],"black")] +
-    [Queen.new([8,5],"black"),Bishop.new([8,6],"black"),Knight.new([8,7],"black"),Rook.new([8,8],"black")]
+    [Rook.new([8,1],"black"),Knight.new([8,2],"black"),Bishop.new([8,3],"black"),Queen.new([8,4],"black")] +
+    [King.new([8,5],"black"),Bishop.new([8,6],"black"),Knight.new([8,7],"black"),Rook.new([8,8],"black")]
   end
   
   def help
@@ -186,5 +291,5 @@ To exit a game midway through enter \"exit\".
 end
 
 chess = Chess.new
-#chess.start
+chess.start
 
