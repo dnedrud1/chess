@@ -39,9 +39,28 @@ describe Chess do
   end
   
   describe 'input' do
-    let(:queen) { Queen.new([4,4],"white") }
+    let(:situation1) { [Queen.new([4,4],"white")] }
     
+    it 'accepts valid input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "d4 to d5" }
+      expect(chess_game).not_to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
     
+    it 'does not accept blank input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
+    
+    it 'does not accept nonsense input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "asd%&(*$#*fasdfa" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
     
   end
   

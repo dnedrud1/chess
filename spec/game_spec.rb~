@@ -39,6 +39,28 @@ describe Chess do
   end
   
   describe 'input' do
+    let(:situation1) { [Queen.new([4,4],"white")] }
+    
+    it 'accepts valid input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "d4 to d5" }
+      expect(chess_game).not_to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
+    
+    it 'does not accept blank input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
+    
+    it 'does not accept nonsense input' do
+      chess_game.pieces = situation1
+      allow(chess_game).to receive(:gets) { "asdfasdfa" }
+      expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
+      chess_game.player_input("white")
+    end
     
   end
   
@@ -177,7 +199,6 @@ describe Chess do
       chess_game.player_input("white")
       expect(king.position).to eql [1,7]
     end
-    
   end
 
 end

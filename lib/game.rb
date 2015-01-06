@@ -44,7 +44,7 @@ class Chess
   def play
     puts "\nMake a move by entering coordinates of piece and destination in this format:"
     puts "\"b2 to b4\""
-    puts "Enter \"help\" at any time for further information"
+    puts "Enter \"help\" at any time for further information."
     puts display_board()
     
     @exit = false
@@ -58,7 +58,9 @@ class Chess
 		end
 		
 		if checkmate?("white") || checkmate?("black")
+		  puts "===================================="
 			puts "Checkmate! #{color.capitalize} wins!"
+			puts "===================================="
 			puts display_board()
 		end
 		
