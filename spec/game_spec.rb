@@ -147,6 +147,15 @@ describe Chess do
     end
   end
   
+  describe '#stalemate?' do
+    let(:situation1) { [King.new([1,5],"white"),Rook.new([8,4],"black"),Rook.new([8,6],"black"),Queen.new([2,1],"black")] }
+    
+    it 'returns true when king cannot move but is not in check' do
+      chess_game.pieces = situation1
+      expect(chess_game.stalemate?("white")).to be_truthy
+    end
+  end
+  
   describe 'castling' do 
     let(:situation1) { [King.new([1,5],"white"),Rook.new([1,1],"white"),Rook.new([1,8],"white")] }
     let(:situation2) { [King.new([8,5],"black"),Rook.new([8,1],"black")] }

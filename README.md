@@ -7,4 +7,4 @@ To start a game of Chess from this directory enter "ruby lib/game.rb" in the com
 
 Tests written in rspec are included in the "spec" directory.
 
-All saved game data in YAML formatt is stored in files in the "saves" directory.
+All saved game data in YAML format is stored in files in the "saves" directory.

@@ -57,7 +57,7 @@ describe Chess do
     
     it 'does not accept nonsense input' do
       chess_game.pieces = situation1
-      allow(chess_game).to receive(:gets) { "asdfasdfa" }
+      allow(chess_game).to receive(:gets) { "asd%&(*$#*fasdfa" }
       expect(chess_game).to receive(:puts).with("Please enter a valid move!\ne.g. \"b2 to b4\"")
       chess_game.player_input("white")
     end
@@ -144,6 +144,15 @@ describe Chess do
     it 'returns false when king checked by three pawns' do
       chess_game.pieces = situation5
       expect(chess_game.checkmate?("white")).to be_falsey
+    end
+  end
+  
+  describe '#stalemate?' do
+    let(:situation1) { [King.new([1,5],"white"),Rook.new([8,4],"black"),Rook.new([8,6],"black"),Queen.new([2,1],"black")] }
+    
+    it 'returns true when king cannot move but is not in check' do
+      chess_game.pieces = situation1
+      expect(chess_game.stalemate?("white")).to be_truey
     end
   end
   
