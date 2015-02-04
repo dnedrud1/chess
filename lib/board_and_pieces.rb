@@ -71,9 +71,9 @@ class Pawn
   
   def move(new,pieces)
     if available_moves(pieces).include?(new)
-		  @position = new
-		  @moves += 1
-	  end
+      @position = new
+      @moves += 1
+    end
   end
 end
 
@@ -144,16 +144,16 @@ class Bishop
     until condition == true
       current = [row + arr[0], column + arr[1]]
       if board.include?(current)
-		    if !piece_positions.include?(current)
-		      all_checked.push(current)
-		    else
-		      occupying_piece = pieces.find { |piece| piece.position == current }
-		      all_checked.push(current) if occupying_piece.color != @color
-		      condition = true
-		    end
-	    else
-	      condition = true
-	    end
+        if !piece_positions.include?(current)
+          all_checked.push(current)
+        else
+          occupying_piece = pieces.find { |piece| piece.position == current }
+          all_checked.push(current) if occupying_piece.color != @color
+          condition = true
+        end
+      else
+        condition = true
+      end
       row += arr[0]
       column += arr[1]
     end
@@ -195,16 +195,16 @@ class Rook
     until condition == true
       current = [row + arr[0], column + arr[1]]
       if board.include?(current)
-		    if !piece_positions.include?(current)
-		      all_checked.push(current)
-		    else
-		      occupying_piece = pieces.find { |piece| piece.position == current }
-		      all_checked.push(current) if occupying_piece.color != @color
-		      condition = true
-		    end
-	    else
-	      condition = true
-	    end
+        if !piece_positions.include?(current)
+          all_checked.push(current)
+        else
+          occupying_piece = pieces.find { |piece| piece.position == current }
+          all_checked.push(current) if occupying_piece.color != @color
+          condition = true
+        end
+      else
+        condition = true
+      end
       row += arr[0]
       column += arr[1]
     end
@@ -213,9 +213,9 @@ class Rook
   
   def move(new,pieces)
     if available_moves(pieces).include?(new)
-		  @position = new
-		  @moves += 1
-	  end
+      @position = new
+      @moves += 1
+    end
   end
 end
 
@@ -248,16 +248,16 @@ class Queen
     until condition == true
       current = [row + arr[0], column + arr[1]]
       if board.include?(current)
-		    if !piece_positions.include?(current)
-		      all_checked.push(current)
-		    else
-		      occupying_piece = pieces.find { |piece| piece.position == current }
-		      all_checked.push(current) if occupying_piece.color != @color
-		      condition = true
-		    end
-	    else
-	      condition = true
-	    end
+        if !piece_positions.include?(current)
+          all_checked.push(current)
+        else
+          occupying_piece = pieces.find { |piece| piece.position == current }
+          all_checked.push(current) if occupying_piece.color != @color
+          condition = true
+        end
+      else
+        condition = true
+      end
       row += arr[0]
       column += arr[1]
     end
@@ -305,9 +305,9 @@ class King
   
   def move(new,pieces)
     if available_moves(pieces).include?(new)
-		  @position = new
-		  @moves += 1
-	  end
+      @position = new
+      @moves += 1
+    end
   end
 end
 
